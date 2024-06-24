@@ -1,0 +1,39 @@
+const fromCurrencySelect = document.getElementById('from-currency');
+const toCurrencySelect = document.getElementById('to-currency');
+const amountInput = document.getElementById('amount');
+const convertButton = document.getElementById('convert-button');
+const convertedAmount = document.getElementById('converted-amount');
+
+const API_KEY = 'YOUR_API_KEY'; // Replace with your actual API key
+
+const convertCurrency = async () => {
+  const fromCurrency = fromCurrencySelect.value;
+  const toCurrency = toCurrencySelect.value;
+  const amount = amountInput.value;
+
+  if (!amount) {
+    alert('Please enter an amount to convert.');
+    return;
+  }
+
+  const url = `https://api.exchangerate.api.io/v4/latest?base=${fromCurrency}&symbols=${toCurrency}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`
+      }
+    });
+
+    const data = await response.json();
+    const exchangeRate = data.rates[toCurrency];
+    const convertedValue = amount * exchangeRate;
+
+    convertedAmount.textContent = `${amount} ${fromCurrency} is equivalent to ${convertedValue.toFixed(2)} ${toCurrency}`;
+  } catch (error) {
+    console.error(error);
+    convertedAmount.textContent = 'An error occurred during conversion.';
+  }
+};
+
+convertButton.addEventListener('click', convertCurrency);
